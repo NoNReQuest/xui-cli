@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="fa">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/assets/ant-design-vue@1.7.2/antd.min.css">
+    <link rel="stylesheet" href="/assets/element-ui@2.15.0/theme-chalk/display.css">
+    <link rel="stylesheet" href="/assets/css/custom.css?0.3.2">
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+    <title>X-Ui Persian (@Forbidd3n)</title>
+</head>
+
+<style>
+    @media (min-width: 769px) {
+        .ant-layout-content {
+            margin: 24px 16px;
+        }
+    }
+
+    .ant-col-sm-24 {
+        margin-top: 10px;
+    }
+</style>
+<body>
+<a-layout id="app" v-cloak>
+    
+<a-layout-sider id="sider" collapsible breakpoint="md" collapsed-width="0">
+    <a-menu theme="blue" mode="inline" :selected-keys="['/xui/']"
+            @click="({key}) => key.startsWith('http') ? window.open(key) : location.href = key">
+        
+<a-menu-item key="/xui/">
+    <a-icon type="dashboard"></a-icon>
+    <span>صفحه اصلی</span>
+</a-menu-item>
+<a-menu-item key="/xui/inbounds">
+    <a-icon type="user"></a-icon>
+    <span>کاربران</span>
+</a-menu-item>
+<a-menu-item key="/xui/setting">
+    <a-icon type="setting"></a-icon>
+    <span>تنظیمات</span>
+</a-menu-item>
+
+
+
+
+<a-sub-menu>
+    <template slot="title">
+        <a-icon type="link"></a-icon>
+        <span>حمایت</span>
+    </template>
+    <a-menu-item key="https://github.com/OldSpi3der/x-ui/">
+        <a-icon type="github"></a-icon>
+        <span>گیت هاب</span>
+    </a-menu-item>
+</a-sub-menu>
+<a-menu-item key="/logout">
+    <a-icon type="logout"></a-icon>
+    <span>خروج</span>
+</a-menu-item>
+
+    </a-menu>
+</a-layout-sider>
+<a-drawer id="sider-drawer" placement="left" :closable="false"
+          @close="siderDrawer.close()"
+          :visible="siderDrawer.visible" :wrap-style="{ padding: 0 }">
+    <div class="drawer-handle" @click="siderDrawer.change()" slot="handle">
+        <a-icon :type="siderDrawer.visible ? 'close' : 'menu-fold'"></a-icon>
+    </div>
+    <a-menu theme="light" mode="inline" :selected-keys="['/xui/']"
+        @click="({key}) => key.startsWith('http') ? window.open(key) : location.href = key">
+        
+<a-menu-item key="/xui/">
+    <a-icon type="dashboard"></a-icon>
+    <span>صفحه اصلی</span>
+</a-menu-item>
+<a-menu-item key="/xui/inbounds">
+    <a-icon type="user"></a-icon>
+    <span>کاربران</span>
+</a-menu-item>
+<a-menu-item key="/xui/setting">
+    <a-icon type="setting"></a-icon>
+    <span>تنظیمات</span>
+</a-menu-item>
+
+
+
+
+<a-sub-menu>
+    <template slot="title">
+        <a-icon type="link"></a-icon>
+        <span>حمایت</span>
+    </template>
+    <a-menu-item key="https://github.com/OldSpi3der/x-ui/">
+        <a-icon type="github"></a-icon>
+        <span>گیت هاب</span>
+    </a-menu-item>
+</a-sub-menu>
+<a-menu-item key="/logout">
+    <a-icon type="logout"></a-icon>
+    <span>خروج</span>
+</a-menu-item>
+
+    </a-menu>
+</a-drawer>
+<script>
+
+    const siderDrawer = {
+        visible: false,
+        show() {
+            this.visible = true;
+        },
+        close() {
+            this.visible = false;
+        },
+        change() {
+            this.visible = !this.visible;
+        }
+    };
+
+</script>
+
+    <a-layout id="content-layout">
+        <a-layout-content>
+            <a-spin :spinning="spinning" :delay="200" :tip="loadingTip"/>
+            <transition name="list" appear>
+                <a-row>
+                    <a-card hoverable>
+                        <a-row>
+                            <a-col :sm="24" :md="12">
+                                <a-row>
+                                    <a-col :span="12" style="text-align: center">
+                                        <a-progress type="dashboard" status="normal"
+                                                    :stroke-color="status.cpu.color"
+                                                    :percent="status.cpu.percent"></a-progress>
+                                        <div>پردازنده</div>
+                                    </a-col>
+                                    <a-col :span="12" style="text-align: center">
+                                        <a-progress type="dashboard" status="normal"
+                                                    :stroke-color="status.mem.color"
+                                                    :percent="status.mem.percent"></a-progress>
+                                        <div>
+                                            رم : [[ sizeFormat(status.mem.current) ]] / [[ sizeFormat(status.mem.total) ]]
+                                        </div>
+                                    </a-col>
+                                </a-row>
+                            </a-col>
+                            <a-col :sm="24" :md="12">
+                                <a-row>
+                                    <a-col :span="12" style="text-align: center">
+                                        <a-progress type="dashboard" status="normal"
+                                                    :stroke-color="status.swap.color"
+                                                    :percent="status.swap.percent"></a-progress>
+                                        <div>
+                                            مبادله: [[ sizeFormat(status.swap.current) ]] / [[ sizeFormat(status.swap.total) ]]
+                                        </div>
+                                    </a-col>
+                                    <a-col :span="12" style="text-align: center">
+                                        <a-progress type="dashboard" status="normal"
+                                                    :stroke-color="status.disk.color"
+                                                    :percent="status.disk.percent"></a-progress>
+                                        <div>
+                                            فضای ذخیره سازی: [[ sizeFormat(status.disk.current) ]] / [[ sizeFormat(status.disk.total) ]]
+                                        </div>
+                                    </a-col>
+                                </a-row>
+                            </a-col>
+                        </a-row>
+                    </a-card>
+                </a-row>
+            </transition>
+            <transition name="list" appear>
+                <a-row>
+                    <a-col :sm="24" :md="12">
+                        <a-card hoverable>
+                            نسخه xray:
+                            <a-tag :color="status.xray.color">[[ status.xray.state ]]</a-tag>
+                            <a-tooltip v-if="status.xray.state === State.Error">
+                                <template slot="title">
+                                    <p v-for="line in status.xray.errorMsg.split('\n')">[[ line ]]</p>
+                                </template>
+                                <a-icon type="question-circle" theme="filled"></a-icon>
+                            </a-tooltip>
+                            <a-tag color="green" @click="openSelectV2rayVersion">[[ status.xray.version ]]</a-tag>
+                            <a-tag color="blue" @click="openSelectV2rayVersion">تغییر نسخه</a-tag>
+                        </a-card>
+                    </a-col>
+                    <a-col :sm="24" :md="12">
+                        <a-card hoverable>
+                            زمان کار:
+                            <a-tag color="#87d068">[[ formatSecond(status.uptime) ]]</a-tag>
+                            <a-tooltip>
+                                <template slot="title">
+                                    زمان کارکرد سیستم از زمان راه اندازی
+                                </template>
+                                <a-icon type="question-circle" theme="filled"></a-icon>
+                            </a-tooltip>
+                        </a-card>
+                    </a-col>
+                    <a-col :sm="24" :md="12">
+                        <a-card hoverable>
+                            بار سیستم: [[ status.loads[0] ]] | [[ status.loads[1] ]] | [[ status.loads[2] ]]
+                        </a-card>
+                    </a-col>
+                    <a-col :sm="24" :md="12">
+                        <a-card hoverable>
+                            اتصالات tcp / udp: [[ status.tcpCount ]] / [[ status.udpCount ]]
+                            <a-tooltip>
+                                <template slot="title">
+                                    所有网卡的总连接数
+                                </template>
+                                <a-icon type="question-circle" theme="filled"></a-icon>
+                            </a-tooltip>
+                        </a-card>
+                    </a-col>
+                    <a-col :sm="24" :md="12">
+                        <a-card hoverable>
+                            <a-row>
+                                <a-col :span="12">
+                                    <a-icon type="arrow-up"></a-icon>
+                                    ارسال: [[ sizeFormat(status.netIO.up) ]] / S
+                                    <a-tooltip>
+                                        <template slot="title">
+                                            سرعت کل آپلود کل کاربران
+                                        </template>
+                                        <a-icon type="question-circle" theme="filled"></a-icon>
+                                    </a-tooltip>
+                                </a-col>
+                                <a-col :span="12">
+                                    <a-icon type="arrow-down"></a-icon>
+                                    دریافت: [[ sizeFormat(status.netIO.down) ]] / S
+                                    <a-tooltip>
+                                        <template slot="title">
+                                            سرعت کل دانلود کل کاربران
+                                        </template>
+                                        <a-icon type="question-circle" theme="filled"></a-icon>
+                                    </a-tooltip>
+                                </a-col>
+                            </a-row>
+                        </a-card>
+                    </a-col>
+                    <a-col :sm="24" :md="12">
+                        <a-card hoverable>
+                            <a-row>
+                                <a-col :span="12">
+                                    <a-icon type="cloud-upload"></a-icon>
+                                    [[ sizeFormat(status.netTraffic.sent) ]]
+                                    <a-tooltip>
+                                        <template slot="title">
+                                            系统启动以来所有网卡的总上传流量
+                                        </template>
+                                        <a-icon type="question-circle" theme="filled"></a-icon>
+                                    </a-tooltip>
+                                </a-col>
+                                <a-col :span="12">
+                                    <a-icon type="cloud-download"></a-icon>
+                                    [[ sizeFormat(status.netTraffic.recv) ]]
+                                    <a-tooltip>
+                                        <template slot="title">
+                                            系统启动以来所有网卡的总下载流量
+                                        </template>
+                                        <a-icon type="question-circle" theme="filled"></a-icon>
+                                    </a-tooltip>
+                                </a-col>
+                            </a-row>
+                        </a-card>
+                    </a-col>
+                </a-row>
+            </transition>
+        </a-layout-content>
+    </a-layout>
+    <a-modal id="version-modal" v-model="versionModal.visible" title="نسخه سوئیچ"
+             :closable="true" @ok="() => versionModal.visible = false"
+             ok-text="مطمئن" cancel-text="لغو کنید">
+        <h2>روی نسخه ای که می خواهید تغییر دهید کلیک کنید</h2>
+        <h2>لطفاً با دقت انتخاب کنید، ممکن است نسخه قدیمی با پیکربندی سازگار نباشد</h2>
+        <template v-for="version, index in versionModal.versions">
+            <a-tag :color="index % 2 == 0 ? 'blue' : 'green'"
+                   style="margin: 10px" @click="switchV2rayVersion(version)">
+                [[ version ]]
+            </a-tag>
+        </template>
+    </a-modal>
+</a-layout>
+
+<script src="/assets/vue@2.6.12/vue.min.js"></script>
+<script src="/assets/moment/moment.min.js"></script>
+<script src="/assets/ant-design-vue@1.7.2/antd.min.js"></script>
+<script src="/assets/base64/base64.min.js"></script>
+<script src="/assets/axios/axios.min.js"></script>
+<script src="/assets/qs/qs.min.js"></script>
+<script src="/assets/qrcode/qrious.min.js"></script>
+<script src="/assets/clipboard/clipboard.min.js"></script>
+<script src="/assets/uri/URI.min.js"></script>
+<script src="/assets/js/axios-init.js?0.3.2"></script>
+<script src="/assets/js/util/common.js?0.3.2"></script>
+<script src="/assets/js/util/date-util.js?0.3.2"></script>
+<script src="/assets/js/util/utils.js?0.3.2"></script>
+<script src="/assets/js/model/xray.js?0.3.2"></script>
+<script src="/assets/js/model/models.js?0.3.2"></script>
+<script>
+    const basePath = '\/';
+    axios.defaults.baseURL = basePath;
+</script>
+
+<script>
+
+    const State = {
+        Running: "درحال اجرا",
+        Stop: "توقف",
+        Error: "خطا",
+    }
+    Object.freeze(State);
+
+    class CurTotal {
+
+        constructor(current, total) {
+            this.current = current;
+            this.total = total;
+        }
+
+        get percent() {
+            if (this.total === 0) {
+                return 0;
+            }
+            return toFixed(this.current / this.total * 100, 2);
+        }
+
+        get color() {
+            const percent = this.percent;
+            if (percent < 80) {
+                return '#975fa3';
+            } else if (percent < 90) {
+                return '#E6A23C';
+            } else {
+                return '#F56C6C';
+            }
+        }
+    }
+
+    class Status {
+        constructor(data) {
+            this.cpu = new CurTotal(0, 0);
+            this.disk = new CurTotal(0, 0);
+            this.loads = [0, 0, 0];
+            this.mem = new CurTotal(0, 0);
+            this.netIO = {up: 0, down: 0};
+            this.netTraffic = {sent: 0, recv: 0};
+            this.swap = new CurTotal(0, 0);
+            this.tcpCount = 0;
+            this.udpCount = 0;
+            this.uptime = 0;
+            this.xray = {state: State.Stop, errorMsg: "", version: "", color: ""};
+
+            if (data == null) {
+                return;
+            }
+            this.cpu = new CurTotal(data.cpu, 100);
+            this.disk = new CurTotal(data.disk.current, data.disk.total);
+            this.loads = data.loads.map(load => toFixed(load, 2));
+            this.mem = new CurTotal(data.mem.current, data.mem.total);
+            this.netIO = data.netIO;
+            this.netTraffic = data.netTraffic;
+            this.swap = new CurTotal(data.swap.current, data.swap.total);
+            this.tcpCount = data.tcpCount;
+            this.udpCount = data.udpCount;
+            this.uptime = data.uptime;
+            this.xray = data.xray;
+            switch (this.xray.state) {
+                case State.Running:
+                    this.xray.color = "green";
+                    break;
+                case State.Stop:
+                    this.xray.color = "orange";
+                    break;
+                case State.Error:
+                    this.xray.color = "red";
+                    break;
+                default:
+                    this.xray.color = "purple";
+            }
+        }
+    }
+
+    const versionModal = {
+        visible: false,
+        versions: [],
+        show(versions) {
+            this.visible = true;
+            this.versions = versions;
+        },
+        hide() {
+            this.visible = false;
+        },
+    };
+
+    const app = new Vue({
+        delimiters: ['[[', ']]'],
+        el: '#app',
+        data: {
+            siderDrawer,
+            status: new Status(),
+            versionModal,
+            spinning: false,
+            loadingTip: 'بارگذاری',
+        },
+        methods: {
+            loading(spinning, tip = 'بارگذاری') {
+                this.spinning = spinning;
+                this.loadingTip = tip;
+            },
+            async getStatus() {
+                const msg = await HttpUtil.post('/server/status');
+                if (msg.success) {
+                    this.setStatus(msg.obj);
+                }
+            },
+            setStatus(data) {
+                this.status = new Status(data);
+            },
+            async openSelectV2rayVersion() {
+                this.loading(true);
+                const msg = await HttpUtil.post('server/getXrayVersion');
+                this.loading(false);
+                if (!msg.success) {
+                    return;
+                }
+                versionModal.show(msg.obj);
+            },
+            switchV2rayVersion(version) {
+                this.$confirm({
+                    title: '切换 xray 版本',
+                    content: 'آیا باید نسخه xray را تغییر داد یا خیر' + ` ${version}?`,
+                    okText: 'مطمئن',
+                    cancelText: 'لغو کنید',
+                    onOk: async () => {
+                        versionModal.hide();
+                        this.loading(true, 'در حال نصب، لطفاً این صفحه را بازخوانی نکنید');
+                        await HttpUtil.post(`/server/installXray/${version}`);
+                        this.loading(false);
+                    },
+                });
+            },
+        },
+        async mounted() {
+            while (true) {
+                try {
+                    await this.getStatus();
+                } catch (e) {
+                    console.error(e);
+                }
+                await PromiseUtil.sleep(2000);
+            }
+        },
+    });
+
+</script>
+</body>
+</html>
